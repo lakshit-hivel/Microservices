@@ -37,7 +37,9 @@ router.post("/new-user", async (req, res) => {
 
 router.get("/all-users", async (req, res) => {
   try {
-    const allUsers = await prisma.user.findMany();
+    const allUsers = await prisma.user.findMany({
+      where: { isDeleted: false },
+    });
     res
       .status(200)
       .json({ message: "All users fetched successfully", data: allUsers });
@@ -50,7 +52,7 @@ router.get("/get-user/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const userFound = await prisma.user.findUnique({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(id), isDeleted: false },
     });
     if (userFound) {
       res
@@ -78,7 +80,7 @@ router.put("/update-user/:id", async (req, res) => {
       password,
     } = req.body;
     const userToUpdate = await prisma.user.update({
-      where: { id: parseInt(id) },
+      where: { id: parseInt(id), isDeleted: false },
       data: {
         name,
         email,
@@ -101,8 +103,9 @@ router.put("/update-user/:id", async (req, res) => {
 router.delete("/delete-user/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const userDelete = await prisma.user.delete({
-      where: { id: parseInt(id) },
+    const userDelete = await prisma.user.update({
+      where: { id: parseInt(id), isDeleted: false },
+      data: { isDeleted: true, deletedAt: new Date() },
     });
     res
       .status(200)
