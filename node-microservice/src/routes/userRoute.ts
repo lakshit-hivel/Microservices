@@ -148,6 +148,22 @@ router.put("/update-user/:id", async (req, res) => {
   }
 });
 
+// Restore User
+router.put("/restore-user/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const uerToRestore = await prisma.user.update({
+      where: { id: parseInt(id) },
+      data: { isDeleted: false, deletedAt: null },
+    });
+    res
+      .status(200)
+      .json({ message: "User restored successfully", data: uerToRestore });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
 // Soft delete user
 router.delete("/delete-user/:id", async (req, res) => {
   try {
