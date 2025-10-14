@@ -13,7 +13,15 @@ router.post("/new-user", async (req, res) => {
       gender,
       profilePicture,
       role,
-      password,
+      age,
+      university,
+      company,
+      title,
+      department,
+      address,
+      state,
+      city,
+      status,
     } = req.body;
     const newUser = await prisma.user.create({
       data: {
@@ -24,7 +32,15 @@ router.post("/new-user", async (req, res) => {
         gender,
         profilePicture,
         role,
-        password,
+        age,
+        university,
+        company,
+        title,
+        department,
+        address,
+        state,
+        city,
+        status,
       },
     });
     res
@@ -77,7 +93,15 @@ router.put("/update-user/:id", async (req, res) => {
       gender,
       profilePicture,
       role,
-      password,
+      age,
+      university,
+      company,
+      title,
+      department,
+      address,
+      state,
+      status,
+      city,
     } = req.body;
     const userToUpdate = await prisma.user.update({
       where: { id: parseInt(id), isDeleted: false },
@@ -89,7 +113,15 @@ router.put("/update-user/:id", async (req, res) => {
         gender,
         profilePicture,
         role,
-        password,
+        age,
+        university,
+        company,
+        title,
+        department,
+        address,
+        state,
+        status,
+        city,
       },
     });
     res
