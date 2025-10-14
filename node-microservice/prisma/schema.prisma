@@ -26,7 +26,6 @@ model User {
   address        String
   state          String
   city           String
-  status         String
   phone          String
   country        String    @default("India")
   gender         String

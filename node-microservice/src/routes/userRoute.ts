@@ -3,6 +3,7 @@ import express from "express";
 
 const router = express.Router();
 
+// Create a new user
 router.post("/new-user", async (req, res) => {
   try {
     const {
@@ -21,7 +22,6 @@ router.post("/new-user", async (req, res) => {
       address,
       state,
       city,
-      status,
     } = req.body;
     const newUser = await prisma.user.create({
       data: {
@@ -40,7 +40,6 @@ router.post("/new-user", async (req, res) => {
         address,
         state,
         city,
-        status,
       },
     });
     res
@@ -51,6 +50,7 @@ router.post("/new-user", async (req, res) => {
   }
 });
 
+// Get all users
 router.get("/all-users", async (req, res) => {
   try {
     const allUsers = await prisma.user.findMany({
@@ -64,6 +64,22 @@ router.get("/all-users", async (req, res) => {
   }
 });
 
+// Get all deleted users
+router.get("/all-deleted-users", async (req, res) => {
+  try {
+    const allUsers = await prisma.user.findMany({
+      where: { isDeleted: true },
+    });
+    res.status(200).json({
+      message: "All deleted users fetched successfully",
+      data: allUsers,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+// Get user by id
 router.get("/get-user/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -82,6 +98,7 @@ router.get("/get-user/:id", async (req, res) => {
   }
 });
 
+// Update user
 router.put("/update-user/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -100,7 +117,6 @@ router.put("/update-user/:id", async (req, res) => {
       department,
       address,
       state,
-      status,
       city,
     } = req.body;
     const userToUpdate = await prisma.user.update({
@@ -120,7 +136,7 @@ router.put("/update-user/:id", async (req, res) => {
         department,
         address,
         state,
-        status,
+
         city,
       },
     });
@@ -132,6 +148,7 @@ router.put("/update-user/:id", async (req, res) => {
   }
 });
 
+// Soft delete user
 router.delete("/delete-user/:id", async (req, res) => {
   try {
     const { id } = req.params;
