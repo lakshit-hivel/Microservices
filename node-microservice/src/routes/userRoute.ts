@@ -1,10 +1,11 @@
+import { authMiddleware } from "@/middlewares/auth.middleware";
 import { prisma } from "@/utils/prismaClient";
 import express from "express";
 
 const router = express.Router();
 
 // Create a new user
-router.post("/new-user", async (req, res) => {
+router.post("/new-user", authMiddleware, async (req, res) => {
   try {
     const {
       name,
@@ -51,7 +52,7 @@ router.post("/new-user", async (req, res) => {
 });
 
 // Get all users
-router.get("/all-users", async (req, res) => {
+router.get("/all-users", authMiddleware, async (req, res) => {
   try {
     const allUsers = await prisma.user.findMany({
       where: { isDeleted: false },
@@ -65,7 +66,7 @@ router.get("/all-users", async (req, res) => {
 });
 
 // Get all deleted users
-router.get("/all-deleted-users", async (req, res) => {
+router.get("/all-deleted-users", authMiddleware, async (req, res) => {
   try {
     const allUsers = await prisma.user.findMany({
       where: { isDeleted: true },
@@ -80,7 +81,7 @@ router.get("/all-deleted-users", async (req, res) => {
 });
 
 // Get user by id
-router.get("/get-user/:id", async (req, res) => {
+router.get("/get-user/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const userFound = await prisma.user.findUnique({
@@ -99,7 +100,7 @@ router.get("/get-user/:id", async (req, res) => {
 });
 
 // Update user
-router.put("/update-user/:id", async (req, res) => {
+router.put("/update-user/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -149,7 +150,7 @@ router.put("/update-user/:id", async (req, res) => {
 });
 
 // Restore User
-router.put("/restore-user/:id", async (req, res) => {
+router.put("/restore-user/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const uerToRestore = await prisma.user.update({
@@ -165,7 +166,7 @@ router.put("/restore-user/:id", async (req, res) => {
 });
 
 // Soft delete user
-router.delete("/delete-user/:id", async (req, res) => {
+router.delete("/delete-user/:id", authMiddleware, async (req, res) => {
   try {
     const { id } = req.params;
     const userDelete = await prisma.user.update({
