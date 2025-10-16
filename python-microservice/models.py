@@ -1,6 +1,8 @@
 # models.py
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, func
-from .database import Base
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy.sql import func
+from datetime import datetime
+from database import Base
 
 class User(Base):
     __tablename__ = "User"
@@ -23,8 +25,8 @@ class User(Base):
     role = Column(String, nullable=False, default="user")
     isDeleted = Column(Boolean, nullable=False, default=False)
     deletedAt = Column(DateTime, nullable=True)
-    createdAt = Column(DateTime(timezone=True), server_default=func.now())
-    updatedAt = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
+    createdAt = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
 
 class AuthUser(Base):
@@ -34,5 +36,5 @@ class AuthUser(Base):
     email = Column(String, unique=True, nullable=False)
     username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    createdAt = Column(DateTime(timezone=True), server_default=func.now())
-    updatedAt = Column(DateTime(timezone=True), onupdate=func.now(), server_default=func.now())
+    createdAt = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updatedAt = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)

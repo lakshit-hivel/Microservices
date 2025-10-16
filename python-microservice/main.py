@@ -1,7 +1,12 @@
 from fastapi import FastAPI
+from router import userRouter
+from database import engine
+import models
 
-app = FastAPI()
+app = FastAPI(title="Python Microservice")
+
+app.include_router(userRouter.router)
 
 @app.get("/")
-def greet ():
-    return "Hey"
+def root():
+    return {"status": "Running Successfully ✅"}

@@ -26,7 +26,7 @@ class UserDelete(BaseModel):
     id: int
     isDeleted: bool = True
 
-class UserGet(UserBase):
+class User(UserBase):
     id: int
 
     class Config:
