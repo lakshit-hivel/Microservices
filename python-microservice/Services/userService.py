@@ -11,7 +11,7 @@ def create_user(db:Session, user:UserCreate):
     return new_user_instance
 
 def get_all_users(db:Session):
-    return db.query(User).all()
+    return db.query(User).filter(User.isDeleted==False).all()
 
 def get_user_by_id(db:Session, user_id:int):
     return db.query(User).filter(User.id == user_id).first()
