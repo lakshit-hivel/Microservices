@@ -1,14 +1,16 @@
 from fastapi import FastAPI
 from router import userRouter, authRouter
-from database import engine
-import models
 from fastapi.middleware.cors import CORSMiddleware
+from rateLimiter import limiter
+from slowapi.errors import RateLimitExceeded
+from slowapi import _rate_limit_exceeded_handler
 
 app = FastAPI(title="Python Microservice")
 
-origins = [
-    "http://localhost:5173",
-]
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
+
+origins = ["http://localhost:5173"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -17,6 +19,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 app.include_router(authRouter.router)
 app.include_router(userRouter.router)
 
