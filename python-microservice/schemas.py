@@ -33,6 +33,15 @@ class User(UserBase):
         from_attributes = True
 
 
+# Response schemas with message and data
+class UserResponse(BaseModel):
+    message: str
+    data: User
+
+class UserListResponse(BaseModel):
+    message: str
+    data: list[User]
+
 
 class AuthUserBase(BaseModel):
     email: str
