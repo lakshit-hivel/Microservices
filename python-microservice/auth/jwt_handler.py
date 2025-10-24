@@ -3,7 +3,7 @@ import os
 from jose import jwt, JWTError
 
 SECRET_KEY = os.getenv("SECRET_KEY")
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 600
 
 def create_access_token(data: dict):
     to_encode = data.copy()

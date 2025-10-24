@@ -1,0 +1,36 @@
+# IDE folders - ignore at project root level
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Node modules (if any shared dependencies)
+node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# Java
+*.class
+*.jar
+*.war
+target/
+
+# Logs
+*.log
+logs/
+
