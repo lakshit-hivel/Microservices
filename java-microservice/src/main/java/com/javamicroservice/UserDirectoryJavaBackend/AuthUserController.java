@@ -3,7 +3,8 @@ package com.javamicroservice.UserDirectoryJavaBackend;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;
@@ -17,7 +18,8 @@ public class AuthUserController {
     @Autowired
     private LocalAuthRepo localAuthRepo;
 
-    private final String jwtSecret = "mySecretJwtKeyForHS256AlgorithmMustBe256BitsLong";
+    private final String jwtSecretString = "mySecretJwtKeyForHS256AlgorithmMustBe256BitsLong";
+    private final SecretKey jwtSecret = Keys.hmacShaKeyFor(jwtSecretString.getBytes());
 
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody AuthUser user) {
@@ -31,7 +33,7 @@ public class AuthUserController {
         String token = Jwts.builder()
                 .setSubject(user.getEmail())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .signWith(jwtSecret)
                 .compact();
 
         localAuthRepo.save(user);
@@ -53,7 +55,7 @@ public class AuthUserController {
         String token = Jwts.builder()
                 .setSubject(found.get().getEmail())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .signWith(jwtSecret)
                 .compact();
 
         logger.info("Login successful for email: {}", user.getEmail());
