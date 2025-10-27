@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
+import java.time.LocalDateTime;
 
 interface UserRepo extends JpaRepository<User, Integer> {
+    List<User> findByIsDeleted(Boolean isDeleted);
 }
 
 @RestController
@@ -16,8 +18,8 @@ public class UserController {
     private UserRepo repo;
 
     @GetMapping
-    public List<User> getAll() {
-        return repo.findAll();
+    public List<User> getAll(@RequestParam(required = false, defaultValue = "false") Boolean isDeleted) {
+        return repo.findByIsDeleted(isDeleted);
     }
 
     @PostMapping
@@ -58,6 +60,18 @@ public class UserController {
 
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id) {
-        repo.deleteById(id);
+        repo.findById(id).map(u -> {
+            u.setIsDeleted(true);
+            u.setDeletedAt(LocalDateTime.now());
+            return repo.save(u);
+        }).orElse(null);
+    }
+
+    @PutMapping("/restore/{id}")
+    public User restore(@PathVariable Integer id) {
+        return repo.findById(id).map(u -> {
+            u.setIsDeleted(false);
+            return repo.save(u);
+        }).orElse(null);
     }
 }

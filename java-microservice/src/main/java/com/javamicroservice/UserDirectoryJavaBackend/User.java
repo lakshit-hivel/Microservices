@@ -47,7 +47,7 @@ public class User {
     private String gender;
 
     @Column(name = "\"isDeleted\"")
-    private Boolean isDeleted;
+    private Boolean isDeleted = false;
 
     @Column(name = "\"createdAt\"")
     private LocalDateTime createdAt;
@@ -57,4 +57,15 @@ public class User {
 
     @Column(name = "\"deletedAt\"")
     private LocalDateTime deletedAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
