@@ -17,7 +17,7 @@ public class AuthUserController {
     @Autowired
     private LocalAuthRepo localAuthRepo;
 
-    private final String jwtSecret = "supersecretkey";
+    private final String jwtSecret = "mySecretJwtKeyForHS256AlgorithmMustBe256BitsLong";
 
     @PostMapping("/register")
     public Map<String, String> register(@RequestBody AuthUser user) {
@@ -28,9 +28,15 @@ public class AuthUserController {
             return Map.of("message", "Email already exists");
         }
 
+        String token = Jwts.builder()
+                .setSubject(user.getEmail())
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(SignatureAlgorithm.HS256, jwtSecret)
+                .compact();
+
         localAuthRepo.save(user);
         logger.info("User registered successfully: {}", user.getEmail());
-        return Map.of("message", "User registered successfully");
+        return Map.of("message", "User registered successfully", "token", token);
     }
 
     @PostMapping("/login")
