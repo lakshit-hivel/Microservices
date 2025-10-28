@@ -10,29 +10,47 @@ interface UserRepo extends JpaRepository<User, Integer> {
     List<User> findByIsDeleted(Boolean isDeleted);
 }
 
+class UserResponse {
+    private List<User> data;
+    private String message;
+
+    public UserResponse(String message, List<User> data) {
+        this.data = data;
+        this.message = message;
+    }
+
+    public List<User> getData() {
+        return data;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+}
+
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/")
 public class UserController {
 
     @Autowired
     private UserRepo repo;
 
-    @GetMapping
-    public List<User> getAll(@RequestParam(required = false, defaultValue = "false") Boolean isDeleted) {
-        return repo.findByIsDeleted(isDeleted);
+    @GetMapping("/all-users")
+    public UserResponse getAll(@RequestParam(required = false, defaultValue = "false") Boolean isDeleted) {
+        return new UserResponse("All users fetched successfully", repo.findByIsDeleted(isDeleted));
     }
 
-    @PostMapping
+    @PostMapping("/new-user")
     public User create(@RequestBody User user) {
         return repo.save(user);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get-user/{id}")
     public User getOne(@PathVariable Integer id) {
         return repo.findById(id).orElse(null);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update-user/{id}")
     public User update(@PathVariable Integer id, @RequestBody User user) {
         return repo.findById(id).map(u -> {
             u.setName(user.getName());
@@ -58,7 +76,7 @@ public class UserController {
         }).orElse(null);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete-user/{id}")
     public void delete(@PathVariable Integer id) {
         repo.findById(id).map(u -> {
             u.setIsDeleted(true);
@@ -67,11 +85,16 @@ public class UserController {
         }).orElse(null);
     }
 
-    @PutMapping("/restore/{id}")
+    @PutMapping("/restore-user/{id}")
     public User restore(@PathVariable Integer id) {
         return repo.findById(id).map(u -> {
             u.setIsDeleted(false);
             return repo.save(u);
         }).orElse(null);
+    }
+
+    @GetMapping("/all-deleted-users")
+    public UserResponse getAllDeletedUsers() {
+        return new UserResponse("All deleted users fetched successfully", repo.findByIsDeleted(true));
     }
 }

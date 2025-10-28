@@ -37,7 +37,7 @@ public class User {
 
     private String phone;
 
-    private String country;
+    private String country = "India";
 
     private String role;
 

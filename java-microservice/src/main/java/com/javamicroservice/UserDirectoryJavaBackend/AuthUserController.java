@@ -2,12 +2,36 @@ package com.javamicroservice.UserDirectoryJavaBackend;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.*;
+
+class AuthResponse {
+    private String message;
+    private String token;
+
+    public AuthResponse(String message, String token) {
+        this.message = message;
+        this.token = token;
+    }
+
+    public AuthResponse(String message) {
+        this.message = message;
+        this.token = null;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public String getToken() {
+        return token;
+    }
+}
 
 @RestController
 @RequestMapping("/auth")
@@ -22,12 +46,13 @@ public class AuthUserController {
     private final SecretKey jwtSecret = Keys.hmacShaKeyFor(jwtSecretString.getBytes());
 
     @PostMapping("/register")
-    public Map<String, String> register(@RequestBody AuthUser user) {
+    public ResponseEntity<AuthResponse> register(@RequestBody AuthUser user) {
         logger.info("Registration attempt for email: {}", user.getEmail());
 
         if (localAuthRepo.findByEmail(user.getEmail()).isPresent()) {
             logger.warn("Registration failed - Email already exists: {}", user.getEmail());
-            return Map.of("message", "Email already exists");
+            return ResponseEntity.badRequest()
+                    .body(new AuthResponse("Email already exists"));
         }
 
         String token = Jwts.builder()
@@ -38,18 +63,19 @@ public class AuthUserController {
 
         localAuthRepo.save(user);
         logger.info("User registered successfully: {}", user.getEmail());
-        return Map.of("message", "User registered successfully", "token", token);
+        return ResponseEntity.ok(new AuthResponse("User registered successfully", token));
     }
 
     @PostMapping("/login")
-    public Map<String, String> login(@RequestBody AuthUser user) {
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthUser user) {
         logger.info("Login attempt for email: {}", user.getEmail());
 
         Optional<AuthUser> found = localAuthRepo.findByEmail(user.getEmail());
 
         if (found.isEmpty() || !user.getPassword().equals(found.get().getPassword())) {
             logger.warn("Login failed - Invalid credentials for email: {}", user.getEmail());
-            return Map.of("message", "Invalid credentials");
+            return ResponseEntity.badRequest()
+                    .body(new AuthResponse("Invalid credentials"));
         }
 
         String token = Jwts.builder()
@@ -59,6 +85,6 @@ public class AuthUserController {
                 .compact();
 
         logger.info("Login successful for email: {}", user.getEmail());
-        return Map.of("message", "Login successful", "token", token);
+        return ResponseEntity.ok(new AuthResponse("Login successful", token));
     }
 }
